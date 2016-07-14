@@ -41,8 +41,17 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
                     COL_ITEM_PRICE + " TEXT, " +
                     COL_ITEM_TYPE + " TEXT )";
 
+    private static ShoppingSQLiteOpenHelper sInstance;
+
     public ShoppingSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static ShoppingSQLiteOpenHelper getInstance(Context context){
+        if (sInstance == null) {
+            sInstance = new ShoppingSQLiteOpenHelper(context.getApplicationContext());
+        }
+        return sInstance;
     }
 
     @Override
@@ -107,6 +116,45 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
                 null, // g. order by
                 null); // h. limit
 
+        return cursor;
+    }
+
+    public Cursor searchItems(String query){
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.query(
+                SHOPPING_LIST_TABLE_NAME,
+                SHOPPING_COLUMNS,
+                COL_ITEM_NAME + " like ?",
+                new String[]{"%query%"}, null,null,null,null);
+        return cursor;
+    }
+
+//    public String getItemDescription(int id){
+//        SQLiteDatabase db = getReadableDatabase();
+//        Cursor cursor = db.query(SHOPPING_LIST_TABLE_NAME,
+//                new String[]{COL_ITEM_NAME, COL_ITEM_DESCRIPTION, COL_ITEM_PRICE,COL_ITEM_TYPE},
+//                COL_ID+" ?",
+//                new String[]{id+""},
+//                null,null,null,null);
+//        if(cursor.moveToFirst()){
+//            int colIndex = cursor.getColumnIndex(COL_ITEM_DESCRIPTION);
+//            //if it doesnt display the right stuff, this might be the prob, or how i listed all the info above
+//            return cursor.getString(colIndex);
+//        }
+//        else{
+//            return "There is no item by that ID";
+//        }
+//    }
+
+    public Cursor searchItemById(int query){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(
+                SHOPPING_LIST_TABLE_NAME,
+                SHOPPING_COLUMNS,
+                COL_ID+" =?",
+                new String[]{query + ""},
+                null,null,null,null);
         return cursor;
     }
 }

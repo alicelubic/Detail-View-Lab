@@ -35,12 +35,30 @@ public class MainActivity extends AppCompatActivity {
         mShoppingListView = (ListView)findViewById(R.id.shopping_list_view);
         mHelper = new ShoppingSQLiteOpenHelper(MainActivity.this);
 
-        Cursor cursor = mHelper.getShoppingList();
+        final Cursor cursor = mHelper.getShoppingList();
 
         mCursorAdapter = new SimpleCursorAdapter(this,android.R.layout.simple_list_item_1,cursor,new String[]{ShoppingSQLiteOpenHelper.COL_ITEM_NAME},new int[]{android.R.id.text1},0);
         mShoppingListView.setAdapter(mCursorAdapter);
 
         handleIntent(getIntent());
+        //what does the above line do?
+
+        // // // // //
+        //do i need to setText for the shoppinglistview
+
+
+        mShoppingListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this,DetailActivity.class);
+                cursor.moveToPosition(position);
+                int idColumn = cursor.getColumnIndex(ShoppingSQLiteOpenHelper.COL_ID);
+                int listId = cursor.getInt(idColumn);
+                intent.putExtra(ShoppingSQLiteOpenHelper.COL_ID,listId);
+                startActivity(intent);
+            }
+        });
+
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
